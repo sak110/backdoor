@@ -25,6 +25,8 @@ def shell():
         s_send(command)
         if command == "q":
             break
+        elif command[:2] == "cd" and len(command) > 1:
+            continue
         else:
             result = s_recv()
             print(result)

