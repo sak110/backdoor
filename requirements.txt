@@ -1,1 +1,11 @@
-pynput
+os
+mss
+sys 
+json 
+time 
+socket 
+pynput 
+Base64
+requests
+threading 
+subprocess
